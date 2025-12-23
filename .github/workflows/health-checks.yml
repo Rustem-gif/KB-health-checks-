@@ -1,0 +1,81 @@
+name: Health Checks CI
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+
+  workflow_dispatch:
+    inputs:
+      deployment_target:
+        description: 'Deployment target'
+        required: true
+        type: choice
+        options:
+          - Run health checks
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'latest'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Chromium
+        run: npx playwright install chromium
+
+      - name: Run tests
+        env:
+          MAIN_USER_EMAIL: ${{ secrets.MAIN_USER_EMAIL }}
+          MAIN_USER_PASSWORD: ${{ secrets.MAIN_USER_PASSWORD }}
+        run: npm run test:health-checks
+
+      - name: Ensure Playwright summary file exists
+        if: ${{ always() }}
+        run: |
+          if [ ! -f test_summary.json ]; then
+            node .github/scripts/ensure-summary.js
+          fi
+
+      - name: Read Playwright summary
+        if: ${{ failure() }}
+        id: summary
+        run: |
+          if [ ! -f test_summary.json ]; then
+            echo "total=0" >> "$GITHUB_OUTPUT"
+            echo "failed=0" >> "$GITHUB_OUTPUT"
+            echo "duration=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          summary=$(cat test_summary.json)
+          echo "total=$(jq -r '.total_tests' <<< \"$summary\")" >> "$GITHUB_OUTPUT"
+          echo "failed=$(jq -r '.failed' <<< \"$summary\")" >> "$GITHUB_OUTPUT"
+          echo "duration=$(jq -r '.duration_seconds' <<< \"$summary\")" >> "$GITHUB_OUTPUT"
+
+      - name: send default message
+        if: ${{ failure() }}
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ❌ Playwright health checks failed
+            Workflow: ${{ github.workflow }}
+            Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Tests: ${{ steps.summary.outputs.failed }} failed / ${{ steps.summary.outputs.total }} total
+            Qase: https://app.qase.io/run/HC
+
+      - name: Upload Playwright test summary
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary
+          path: test_summary.json
