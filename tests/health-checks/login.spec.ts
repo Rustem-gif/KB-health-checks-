@@ -1,5 +1,6 @@
 import { test, expect, request } from '@playwright/test';
 import { MAIN_USER } from '../../src/Data/Users/mainUser';
+import { expectedResult } from '../../src/Data/expectedResult/expectedResult';
 
 test.describe('Health Check', () => {
   test('Login API health check', async ({ baseURL }) => {
@@ -43,7 +44,7 @@ test.describe('Health Check', () => {
 
     const responseBody = await response.json();
     console.log('API response body:', responseBody);
-    expect(responseBody).toBeTruthy();
+    expect(responseBody).toEqual(expectedResult);
     
     console.log('Health check passed successfully!');
     

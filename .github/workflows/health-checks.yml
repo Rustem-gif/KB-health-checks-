@@ -42,13 +42,6 @@ jobs:
 
         run: npm run test:health-checks
 
-      - name: Ensure Playwright summary file exists
-        if: ${{ always() }}
-        run: |
-          if [ ! -f test_summary.json ]; then
-            node .github/scripts/ensure-summary.js
-          fi
-
       - name: Read Playwright summary
         if: ${{ failure() }}
         id: summary
