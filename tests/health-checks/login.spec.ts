@@ -4,6 +4,7 @@ import { expectedResult } from '../../src/Data/expectedResult/expectedResult';
 
 test.describe('Health Check', () => {
   test('Login API health check', async ({ baseURL }) => {
+    
     console.log('Running health check for login API...');
     
     // Create a new request context
@@ -43,6 +44,10 @@ test.describe('Health Check', () => {
     console.log('API login successful, status:', response.status());
 
     const responseBody = await response.json();
+    const purifiedResponseBody = () => {
+      delete responseBody.current_sign_in_at;
+      return responseBody;
+    }
     console.log('API response body:', responseBody);
     expect(responseBody).toEqual(expectedResult);
     

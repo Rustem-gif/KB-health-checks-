@@ -30,7 +30,6 @@ export const expectedResult = {id: 659203,
     { name: 'ALL_except_VIP_and_BA', id: 'ALL_except_VIP_and_BA' }
   ],
   created_at: '2021-06-02 13:39:41 UTC',
-  current_sign_in_at: '2025-12-24 22:25:49 UTC',
   confirmed_at: '2021-06-02 13:42:22 UTC',
   deposit_bonus_code: null,
   can_issue_bonuses: true,
