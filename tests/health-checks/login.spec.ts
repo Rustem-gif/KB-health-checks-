@@ -29,9 +29,17 @@ test.describe('Health Check', () => {
     });
 
     console.log('API response status:', response.status());
+    console.log('Response headers:', response.headers());
+    console.log('Response URL:', response.url());
 
     // Check response
-    expect(response.status()).toBe(201);
+    if (response.status() !== 201) {
+      const responseText = await response.text();
+      console.error('Failed to sign in via API. Response body:', responseText);
+      throw new Error(`Failed to sign in via API. Status: ${response.status()}`);
+    }
+
+    console.log('API login successful, status:', response.status());
 
     const responseBody = await response.json();
     console.log('API response body:', responseBody);
