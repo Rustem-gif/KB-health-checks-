@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { env } from 'node:process';
 
 /**
  * Read environment variables from file.
@@ -28,7 +29,12 @@ export default defineConfig({
     trace: 'on',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    baseURL: process.env.BASE_URL || 'https://kingbillycasino.com',
+    baseURL: 'https://www.kingbillycasino.com',
+    proxy: {
+      username: env.PROXY_USERNAME,
+      password: env.PROXY_PASSWORD,
+      server: env.PROXY_SERVER!
+    }
   },
 
   /* Configure projects for major browsers */

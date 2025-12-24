@@ -36,6 +36,10 @@ jobs:
         env:
           MAIN_USER_EMAIL: ${{ secrets.MAIN_USER_EMAIL }}
           MAIN_USER_PASSWORD: ${{ secrets.MAIN_USER_PASSWORD }}
+          PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
+          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
+          PROXY_SERVER: ${{ secrets.PROXY_SERVER }}
+
         run: npm run test:health-checks
 
       - name: Ensure Playwright summary file exists
