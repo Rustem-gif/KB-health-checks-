@@ -49,7 +49,7 @@ test.describe('Health Check', () => {
       return responseBody;
     }
     console.log('API response body:', responseBody);
-    expect(responseBody).toEqual(expectedResult);
+    expect(purifiedResponseBody()).toEqual(expectedResult);
     
     console.log('Health check passed successfully!');
     
